@@ -9,10 +9,11 @@ import fs from 'fs'
 // })
 
 export const fileUpload = async (name, image) => {
-    let state = await image.mv(`${process.cwd()}/image/${name}`)
-        .then((data) => true)
-        .catch(err => false)
-    return state
+    return new Promise( async (resolve,reject) =>{
+        let state = await image.mv(`${process.cwd()}/image/${name}`)
+        .then((data) => resolve(true))
+        .catch(err => reject(false))
+    })
 }
 
 export const randomKey = () => {
