@@ -9,23 +9,40 @@ export const taskCreate = async (req, res, next) => {
     let imgName, dldName, coverName, gallary1Name, gallary2Name, gallary3Name
     try {
         let imageSave, dldSave, coverSave, gallary1Save, gallary2Save, gallary3Save
-        if (req?.files?.image) {
-            imgName = randomKey() + req?.files?.image?.name
-            dldName = randomKey() + req?.files?.image?.name
-            coverName = randomKey() + req?.files?.image?.name
-            gallary1Name = randomKey() + req?.files?.image?.name
-            gallary2Name = randomKey() + req?.files?.image?.name
-            gallary3Name = randomKey() + req?.files?.image?.name
+        let fileList = req?.files || {};
+        if (Object.keys(fileList)?.length > 0) {
+            imgName = randomKey() + req?.files?.thumbnail?.name;
+            dldName = randomKey() + req?.files?.dldimage?.name;
+            coverName = randomKey() + req?.files?.coverimage?.name;
+            gallary1Name = randomKey() + req?.files?.gallary1?.name;
+            gallary2Name = randomKey() + req?.files?.gallary2?.name;
+            gallary3Name = randomKey() + req?.files?.gallary3?.name;
 
-            imageSave = await fileUpload(imgName, req.files.image)
-            dldSave = await fileUpload(dldName, req.files.image)
-            coverSave = await fileUpload(coverName, req.files.image)
-            gallary1Save = await fileUpload(gallary1Name, req.files.image)
-            gallary2Save = await fileUpload(gallary2Name, req.files.image)
-            gallary3Save = await fileUpload(gallary3Name, req.files.image)
-
-            if (!imageSave, !dldSave, !coverSave, !gallary1Save, !gallary2Save, !gallary3Save) return next(createError(400, "Filied to upload profile please try agin"))
+            const [imageSave, dldSave, coverSave, gallary1Save, gallary2Save, gallary3Save,] = await
+                Promise.all([
+                    fileUpload(imgName, req.files?.thumbnail),
+                    fileUpload(dldName, req.files?.dldimage),
+                    fileUpload(coverName, req.files?.coverimage),
+                    fileUpload(gallary1Name, req.files?.gallary1),
+                    fileUpload(gallary2Name, req.files?.gallary2),
+                    fileUpload(gallary3Name, req.files?.gallary3),
+                ]);
+            
+            if (
+                (!imageSave,
+                    !dldSave,
+                    !coverSave,
+                    !gallary1Save,
+                    !gallary2Save,
+                    !gallary3Save
+                )
+            )
+                return next(
+                    createError(400, "Filied to upload please try agin")
+                );
         }
+
+
         const newTask = taskModel({
             ...req.body,
             user_id: req.user.id,
@@ -35,37 +52,52 @@ export const taskCreate = async (req, res, next) => {
             gallary1: gallary1Name,
             gallary2: gallary2Name,
             gallary3: gallary3Name,
-        })
-        await newTask.save()
-        res.status(200).json({success:true,message:'project Created'})
+        });
+
+        await newTask.save();
+        res.status(200).json({ success: true, message: "project Created" });
     } catch (err) {
-        next(createError(400, err.message))
+        console.log(err);
+        next(createError(400, err.message));
     }
-}
+};
 
 export const updateTask = async (req, res, next) => {
-    let imgName, dldName, coverName, gallary1Name, gallary2Name, gallary3Name, taskUpdate
+    let imgName,
+        dldName,
+        coverName,
+        gallary1Name,
+        gallary2Name,
+        gallary3Name,
+        taskUpdate;
     try {
         let imageSave, dldSave, coverSave, gallary1Save, gallary2Save, gallary3Save
         if (req?.files?.image) {
-            console.log('aaaaaaaaaa')
-            imgName = randomKey() + req?.files?.image?.name
-            dldName = randomKey() + req?.files?.image?.name
-            coverName = randomKey() + req?.files?.image?.name
-            gallary1Name = randomKey() + req?.files?.image?.name
-            gallary2Name = randomKey() + req?.files?.image?.name
-            gallary3Name = randomKey() + req?.files?.image?.name
+            imgName = randomKey() + req?.files?.thumbnail?.name
+            dldName = randomKey() + req?.files?.dldimage?.name
+            coverName = randomKey() + req?.files?.coverimage?.name
+            gallary1Name = randomKey() + req?.files?.gallary1?.name
+            gallary2Name = randomKey() + req?.files?.gallary2?.name
+            gallary3Name = randomKey() + req?.files?.gallary3?.name
 
 
-            imageSave = await fileUpload(imgName, req.files.image)
-            dldSave = await fileUpload(dldName, req.files.image)
-            coverSave = await fileUpload(coverName, req.files.image)
-            gallary1Save = await fileUpload(gallary1Name, req.files.image)
-            gallary2Save = await fileUpload(gallary2Name, req.files.image)
-            gallary3Save = await fileUpload(gallary3Name, req.files.image)
+            imageSave = await fileUpload(imgName, req.files.thumbnail)
+            dldSave = await fileUpload(dldName, req.files.dldimage)
+            coverSave = await fileUpload(coverName, req.files.coverimage)
+            gallary1Save = await fileUpload(gallary1Name, req.files.gallary1)
+            gallary2Save = await fileUpload(gallary2Name, req.files.gallary2)
+            gallary3Save = await fileUpload(gallary3Name, req.files.gallary3)
 
-            if (!imageSave, !dldSave, !coverSave, !gallary1Save, !gallary2Save, !gallary3Save) return next(createError(400,
-                        "Filied to upload profile please try agin"))
+            if ((!imageSave,
+                !dldSave,
+                !coverSave,
+                !gallary1Save,
+                !gallary2Save,
+                !gallary3Save)
+            )
+                return next(createError(400,
+                    "Filied to upload profile please try agin")
+                );
         }
         const todo = await taskModel.findById(req.params.id);
         if (!todo) {
@@ -77,17 +109,26 @@ export const updateTask = async (req, res, next) => {
         }
         
         taskUpdate = await taskModel.
-            findByIdAndUpdate(req.params.id, {
-            $set:{
+            findByIdAndUpdate(req.params.id,
+                {
+            $set: {
                 ...req.body,
-                    image: imgName, dld: dldName, coverimage: coverName, gallary1: gallary1Name, gallary2: gallary2Save, gallary3: gallary3Save
+                        image: imgName,
+                        dld: dldName,
+                        coverimage: coverName,
+                        gallary1: gallary1Name,
+                        gallary2: gallary2Save,
+                        gallary3: gallary3Save
             }
             }, { new: false })
         
-        if (imageSave, dldSave, coverSave, gallary1Save, gallary2Save, gallary3Save) {
+        if (
+            (imageSave, dldSave, coverSave, gallary1Save, gallary2Save, gallary3Save)
+        ) {
             await fileDelete(taskUpdate?.image);
         }
-        res.status(200).json({success:true,message:'project Upadated'})
+
+        res.status(200).json({success: true, message:'project Upadated'})
     }catch(err){ 
         if (taskUpdate)
             await taskModel.findByIdAndUpdate(req.params.id,
@@ -100,7 +141,7 @@ export const updateTask = async (req, res, next) => {
 
 export const deleteTask = async (req, res, next) => {
     try {
-        const taskDeleted = await userModel.findByIdAndDelete(req.params.id);
+        const taskDeleted = await taskModel.findByIdAndDelete(req.params.id);
         console.log(taskDeleted)
         if (!taskDeleted) {
             return next(createError(404, 'Task not found'));
@@ -161,9 +202,9 @@ export const deleteTask = async (req, res, next) => {
 
 export const getTask = async (req, res, next) => {
     try {
-        const taskGet = await taskModel.find({user_id:req?.user?.id})
-        res.status(200).json({success:true,data:taskGet})
+        const taskGet = await taskModel.find({ user_id: req?.user?.id })
+        res.status(200).json({ success: true, data: taskGet })
     } catch (err) {
         next(createError(400, err.message))
     }
-}
+};
