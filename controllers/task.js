@@ -1,14 +1,13 @@
-import taskModel from '../models/taskM.js'
-import { checkToken } from '../utils/checkAuth.js'
-import { createError } from '../utils/error.js'
-import { fileDelete, fileUpload, randomKey } from '../utils/fileUploader.js'
+import taskModel from "../models/taskM.js";
+import { checkToken } from "../utils/checkAuth.js";
+import { createError } from "../utils/error.js";
+import { fileDelete, fileUpload, randomKey } from "../utils/fileUploader.js";
 
 
 
 export const taskCreate = async (req, res, next) => {
     let imgName, dldName, coverName, gallary1Name, gallary2Name, gallary3Name
     try {
-        let imageSave, dldSave, coverSave, gallary1Save, gallary2Save, gallary3Save
         let fileList = req?.files || {};
         if (Object.keys(fileList)?.length > 0) {
             imgName = randomKey() + req?.files?.thumbnail?.name;
@@ -111,16 +110,16 @@ export const updateTask = async (req, res, next) => {
         taskUpdate = await taskModel.
             findByIdAndUpdate(req.params.id,
                 {
-            $set: {
-                ...req.body,
+                    $set: {
+                        ...req.body,
                         image: imgName,
                         dld: dldName,
                         coverimage: coverName,
                         gallary1: gallary1Name,
                         gallary2: gallary2Save,
                         gallary3: gallary3Save
-            }
-            }, { new: false })
+                    }
+                }, { new: false });
         
         if (
             (imageSave, dldSave, coverSave, gallary1Save, gallary2Save, gallary3Save)
@@ -202,8 +201,8 @@ export const deleteTask = async (req, res, next) => {
 
 export const getTask = async (req, res, next) => {
     try {
-        const taskGet = await taskModel.find({ user_id: req?.user?.id })
-        res.status(200).json({ success: true, data: taskGet })
+        const taskGet = await taskModel.find({ user_id: req?.user?.id });
+        res.status(200).json({ success: true, data: taskGet });
     } catch (err) {
         next(createError(400, err.message))
     }

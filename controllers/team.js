@@ -80,3 +80,23 @@ export const getTeam = async (req, res, next) => {
     }
 
 }
+
+
+export const getTeamById = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const team = await teamModel.findById(id);
+
+        if (!team) {
+            return next(createError(404, 'Team not found'))
+        }
+
+        res.status(200).json({ success: true, data: team });
+    
+    } catch (err) {
+        
+        next(createError(400, err.message))
+    
+    }
+}

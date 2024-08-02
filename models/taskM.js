@@ -92,10 +92,10 @@ const taskSchema = mongoose.Schema({
     dec4: {
         type: String,
     },
-    // status: {
-    //     type: String,
-    //     required: true,
-    // },
+    status: {
+        type: String,
+        required: true,
+    },
     
 })
 

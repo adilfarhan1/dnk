@@ -1,20 +1,25 @@
 import { v4 as uuid } from 'uuid'
 import fs from 'fs'
 
-export const fileUpload = async (name, image) => {
-    return new Promise(async (resolve, reject) => {
-        let state = await image.mv(`${process.cwd()}/image/${name}`)
-            .then((data) => resolve(true))
-        .catch(err => reject(false))
-    })
-}
-
 export const profileUpload = async (name, image) => {
     let state = await image.mv(`${process.cwd()}/image/${name}`)
         .then((data) => true)
         .catch(err => false)
     return state
 }
+
+export const fileUpload = async (name, image) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await image.mv(`${process.cwd()}/image/${name}`);
+            resolve(true);
+        } catch (err) {
+            reject(false);
+        }
+    });
+}
+
+
 
 export const randomKey = () => {
     return uuid()
